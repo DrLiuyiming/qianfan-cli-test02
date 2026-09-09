@@ -1,6 +1,5 @@
 ---
 name: qianfan-profile
-version: 1.0.0
 description: "千帆 CLI 套餐（profile）与默认模型绑定管理：列出/查看套餐、切换当前套餐、为模型类型绑定默认 modelId。当用户提到千帆套餐、切换 profile、绑定默认模型、platform / tokenplan 个人版 / 企业版、qianfan profile，或推理报 MODEL_NOT_CONFIGURED 时使用。反触发：想知道有哪些 modelId 可绑定先转 qianfan-models；只是未登录转 qianfan-auth。"
 license: Apache-2.0
 metadata:

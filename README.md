@@ -57,8 +57,7 @@ qianfan auth status
 qianfan +connect
 ```
 
-安装期开关：`QIANFAN_CLI_SKIP_POSTINSTALL=1` 跳过平台二进制下载（离线环境）；
-`QIANFAN_CLI_SKIP_CONNECT=1` 只装 CLI、不改动本机 Agent 技能目录。
+安装期开关：`QIANFAN_SKIP_POSTINSTALL=1` 跳过平台二进制下载（离线环境使用）。
 
 当前发布版本支持 macOS 与 Windows（x64 / arm64）。
 

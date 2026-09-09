@@ -1,6 +1,5 @@
 ---
 name: qianfan-connect
-version: 1.0.0
 description: "把 qianfan CLI 内嵌的 qianfan-* Agent 技能包安装到本机 Agent 技能目录（qianfan +connect），并支持枚举与卸载。当用户提到安装/更新千帆技能包、把千帆技能装到 Agent、qianfan +connect、列出或卸载已安装技能包，或希望本地 Agent 具备调用千帆 CLI 的能力时使用。反触发：用户想调用千帆能力本身（推理、用量、套餐）时转对应能力 skill，不必重新安装。"
 license: Apache-2.0
 metadata:

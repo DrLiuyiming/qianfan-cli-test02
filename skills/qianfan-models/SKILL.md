@@ -1,6 +1,5 @@
 ---
 name: qianfan-models
-version: 1.0.0
 description: "查询当前千帆账号可绑定的模型列表（qianfan models list），拿到 modelId 供默认模型绑定或临时指定推理模型。当用户问千帆有哪些模型、可用/可绑定模型、列一下 modelId、qianfan models，或在绑定 chat 默认模型前需要候选模型时使用。反触发：真正要绑定默认模型是 qianfan-profile 的 set-default；要发起推理转 qianfan-chat。"
 license: Apache-2.0
 metadata:

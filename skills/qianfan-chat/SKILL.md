@@ -1,6 +1,5 @@
 ---
 name: qianfan-chat
-version: 1.0.0
 description: "通过千帆 CLI（qianfan +chat）调用文本推理模型，支持一次性回复与 SSE 流式输出、system 提示、temperature/top-p/max-tokens 采样参数、临时指定模型与套餐。当用户想用千帆做文本生成/对话/问答、提到 qianfan +chat、用千帆跑一个 prompt、流式输出，或 Agent 流程里需要调用千帆大模型生成文本时使用。反触发：报 MODEL_NOT_CONFIGURED 需要先绑定默认模型时转 qianfan-profile；想知道有哪些模型转 qianfan-models。"
 license: Apache-2.0
 metadata:

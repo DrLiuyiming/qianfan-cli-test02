@@ -35,8 +35,8 @@ hint: 前往 API Key 管理页生成 API Key 后重新执行 qianfan profile use
   `qianfan auth login` 并在浏览器中完成授权。
 - `AUTH_FAILED`：签名失败或无权限（含 `AccessDenied`、`SignatureDoesNotMatch`）→ CLI 已在取 API Key 时
   强制续期并重试过一次；仍失败说明会话彻底失效或账号缺少权限，需重新登录或检查账号权限。
-- `IAM_ERROR`：IAM 接口（API Key 查询/创建/解密）返回错误 → 结合 `message`/`request_id` 排查，必要时重新登录。
-- `IAM_PERMISSION_DENIED`：openapi-iam 权限校验失败（签名已通过，服务端返回 `PermissionValidateFailedException`）→
+- `IAM_ERROR`：IAM 接口返回错误 → 结合 `message`/`request_id` 排查，必要时重新登录。
+- `IAM_PERMISSION_DENIED`：IAM 权限校验失败（签名已通过，是权限不足）→
   当前登录身份缺少 API Key 操作权限，需联系 IAM 管理员授权；重新登录或重试均无效，CLI 不会自动续期重试。
 - `MODEL_NOT_CONFIGURED`：当前套餐未绑定 chat 模型 → `qianfan profile set-default --model-type chat <modelId>`。
 - `MODEL_NOT_ACTIVATED`：目标预置服务未开通后付费调用（服务端 `chargeStatus` 明确为 `false`）→ 前往

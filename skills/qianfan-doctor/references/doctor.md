@@ -12,7 +12,7 @@
 - `current_profile`：当前 profile 是否设置且存在。
 - `chat_model_binding`：当前 profile 是否绑定 chat 模型。FAIL(`MODEL_NOT_CONFIGURED`) →
   `qianfan profile set-default --model-type chat <modelId>`。
-- `api_key`：当前 profile 的 API Key 是否可解析（缓存未命中时会请求 openapi-iam）。FAIL 可能为
+- `api_key`：当前 profile 的 API Key 是否可解析（缓存未命中时会联网获取）。FAIL 可能为
   `INVALID_ARGUMENT`（当前 profile 为 TokenPlan，尚未接入 API Key）/ `IAM_ERROR` / `IAM_PERMISSION_DENIED` /
   `PACKAGE_NOT_ACTIVATED` / `SEAT_NOT_ASSIGNED` / `API_KEY_NOT_GENERATED` / `API_KEY_PERMISSION_DENIED`。
 - `inference`（仅 `--check chat`）：推理连通性探测（以 `max_tokens=1` 发一次极小请求）。FAIL 结合 `code` 判断。

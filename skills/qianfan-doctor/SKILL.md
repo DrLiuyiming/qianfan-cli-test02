@@ -1,6 +1,5 @@
 ---
 name: qianfan-doctor
-version: 1.0.0
 description: "千帆 CLI 体检（qianfan doctor）：一次性检查配置、访问凭证、密钥、BCE V1 签名、当前套餐、chat 模型绑定、API Key 可解析、技能包安装状态，可选 --check chat 探测真实推理连通性。当用户说千帆诊断/体检/自检、为什么调不通、排查千帆问题，或其他 qianfan 命令报错后需要定位根因时使用。反触发：已经明确是未登录就直接转 qianfan-auth；只是缺默认模型转 qianfan-profile。"
 license: Apache-2.0
 metadata:

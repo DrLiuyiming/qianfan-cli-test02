@@ -1,6 +1,5 @@
 ---
 name: qianfan-common
-version: 1.0.0
 description: "千帆 CLI（qianfan 命令）的通用操作规则，供所有 qianfan-* skill 复用：CLI 安装、JSON 输出与解析、认证前置检查、套餐 profile 与模型选择、本地变更的预演与确认、环境变量、统一错误码与退出码。调用任何 qianfan 子命令（auth / profile / models / +chat / service / doctor / +connect）前先加载本 skill。反触发：用户只想执行某个具体能力（如登录、推理、查用量）时不要停在本 skill，读完规则立刻转对应能力 skill。"
 license: Apache-2.0
 metadata:
@@ -85,9 +84,9 @@ qianfan --version
 | `QIANFAN_HOME` | 只有 `auth login` 读取，用于指定本地配置/凭证/缓存根目录（默认 `~/.qianfan`）。登录把最终路径记进 `~/.qianfan/home.json`，其余指令一律按该指针解析、不读此变量；登出不会重置它 |
 | `QIANFAN_CONTROL_PLANE_ENDPOINT` | 覆盖控制面域名 |
 | `QIANFAN_INFERENCE_ENDPOINT` | 覆盖推理域名。推理与控制面**分开配置**，覆盖控制面不会改推理地址 |
-| `QIANFAN_CONSOLE_IAM_ENDPOINT` | 覆盖 console-iam（OAuth）域名 |
-| `QIANFAN_OPENAPI_IAM_ENDPOINT` | 覆盖 openapi-iam（API Key）域名 |
-| `QIANFAN_STS_ENDPOINT` | 覆盖 STS 域名 |
+| `QIANFAN_CONSOLE_IAM_ENDPOINT` | 覆盖浏览器授权服务域名 |
+| `QIANFAN_OPENAPI_IAM_ENDPOINT` | 覆盖 API Key 服务域名 |
+| `QIANFAN_STS_ENDPOINT` | 覆盖临时凭证签发服务域名 |
 | `QIANFAN_DEBUG` | 置 `1`/`true` 时向 stderr 输出请求诊断（签名与令牌脱敏） |
 
 ## 安全与边界

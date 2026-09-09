@@ -1,6 +1,5 @@
 ---
 name: qianfan-shared
-version: 1.0.0
 description: "千帆 CLI 面向 Agent 集成的顶层定位与安全底线：能力地图、凭证职责边界（STS 临时凭证签管控面 / API Key 认推理面）、敏感信息最小暴露、技能包与 Agent 的协作约束。当需要理解千帆 CLI 整体定位、判断某个动作是否越界，或设计多步千帆任务的编排顺序时使用。反触发：具体命令参数与错误码在 qianfan-common 与各能力 skill，不要在本 skill 里找。"
 license: Apache-2.0
 metadata:
@@ -26,9 +25,8 @@ metadata:
 ## 定位
 
 千帆 CLI 面向已拥有千帆账号的用户，把既有管控 API 与推理 API 封装为本地统一命令。它不替代控制台，
-也不引入新的授权体系：用户通过浏览器 OAuth2/OIDC + PKCE 登录，由 STS 签发临时访问凭证（权限与控制台
-一致），CLI 用它以 BCE V1 签名向 openapi-iam 取得该账号的 API Key；此后模型列表、用量统计与推理调用
-一律走 API Key 的 `Authorization: Bearer`。
+也不引入新的授权体系：用户通过浏览器 OAuth2/OIDC + PKCE 登录，获得与控制台一致的访问权限，CLI 据此
+为当前账号准备好 API Key；此后模型列表、用量统计与推理调用一律走 API Key 的 `Authorization: Bearer`。
 
 ## 能力地图
 
@@ -46,13 +44,12 @@ metadata:
 
 ## 凭证职责边界
 
-- **STS 临时凭证**（访问凭证 + 密钥 + session token）：只用于向 openapi-iam 取/建/解密 API Key 时的
-  BCE V1 签名，**不用于推理、也不再直接签业务接口**；由登录流程写入本地存储，密钥与
-  session/refresh/id token 分离保存。临期或服务端失效时 CLI 用 refresh token 自动续期并覆盖落盘，
-  无需用户重新走浏览器登录；续期失败才降级为 `CREDENTIAL_NOT_FOUND`。
+- **临时访问凭证**：只用于管控面（取得 API Key、读取账号信息），**不用于推理、也不再直接签业务接口**；
+  由登录流程写入本地存储，密钥与 session/refresh/id token 分离保存。临期或服务端失效时 CLI 自动续期并
+  覆盖落盘，无需用户重新走浏览器登录；续期失败才降级为 `CREDENTIAL_NOT_FOUND`。
 - **API Key**：用于全部业务调用（推理、模型列表、用量统计、用户信息）的 `Authorization: Bearer` 认证，
-  **不用于 IAM 签名**。platform 套餐的 Key 由 CLI 经 openapi-iam 按固定名称查找、必要时创建并解密获得，
-  登录时导入本地缓存；按 `account + profile` 分区，不跨账号或跨 profile 复用；缓存不设过期时间，
+  **不用于管控面签名**。platform 套餐的 Key 由 CLI 在登录时为当前账号准备并写入本地缓存；按
+  `account + profile` 分区，不跨账号或跨 profile 复用；缓存不设过期时间，
   生命周期与登录态一致（登录/登出都会清空），服务端吊销时由业务调用的 401/403 触发一次刷新。
   TokenPlan 套餐尚未接入 API Key。
 - **单账号约束**：本地同时只保存一个登录账号，换账号必须先 `auth logout`（否则 `ALREADY_LOGGED_IN`）。

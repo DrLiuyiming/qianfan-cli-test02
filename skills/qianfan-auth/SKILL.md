@@ -1,6 +1,5 @@
 ---
 name: qianfan-auth
-version: 1.0.0
 description: "千帆 CLI 认证管理：浏览器 OAuth2/OIDC + PKCE 登录（STS 签发临时凭证）、查看本地凭证状态、清理登录态。当用户要初始化千帆凭证、排查鉴权问题、查看当前登录账号，或任何 qianfan 命令返回 CREDENTIAL_NOT_FOUND / AUTH_FAILED / LOGIN_FAILED / ALREADY_LOGGED_IN 时使用。触发词：千帆登录、登出、浏览器授权、认证状态、qianfan auth。反触发：用户想换套餐或绑定默认模型时转 qianfan-profile；想查为什么推理不通的完整体检转 qianfan-doctor。"
 license: Apache-2.0
 metadata:
@@ -58,11 +57,11 @@ qianfan auth status --format json
 qianfan auth login
 ```
 
-CLI 打开系统浏览器等待授权回调；未能自动打开时会打印授权链接供用户手动访问。授权成功后换取 STS 临时
+CLI 打开系统浏览器等待授权回调；未能自动打开时会打印授权链接供用户手动访问。授权成功后换取临时访问
 凭证并落盘：访问凭证写入 config、密钥写入凭证存储、session/refresh/id token 写入会话存储，同时初始化默认
 profile 并把当前 profile 设为 `platform`。三处写入任一步失败会整体回滚，不留下分属不同账号的混合状态。
-随后 CLI 尝试**为 platform 套餐导入永久 API Key**（经 openapi-iam 按固定名称查找，不存在则创建后解密取
-明文）写入本地缓存；导入失败不影响登录，首次使用时再在线获取。登录失败返回 `LOGIN_FAILED`。
+随后 CLI 尝试**为 platform 套餐准备永久 API Key**并写入本地缓存；准备失败不影响登录，首次使用时再在线
+获取。登录失败返回 `LOGIN_FAILED`。
 
 - **同时只支持一个登录账号**：已有登录态时执行 `auth login` 直接返回 `ALREADY_LOGGED_IN`，浏览器都不会
   打开（`--dry-run` 也会如实报出该冲突）。换账号必须先 `qianfan auth logout`。

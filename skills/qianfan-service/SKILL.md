@@ -1,6 +1,5 @@
 ---
 name: qianfan-service
-version: 1.0.0
 description: "查询千帆服务调用统计（qianfan service usage）：按模型/服务/应用维度的调用次数、成功失败数与 token 消耗，支持时间范围、按天/小时/分钟粒度与指定 modelIds。当用户问千帆用量、调用量、消耗了多少 token、服务调用统计、看看这段时间的调用情况，或要核对某个 modelId 的调用明细时使用。反触发：只是想发起一次推理转 qianfan-chat；查有哪些模型转 qianfan-models。"
 license: Apache-2.0
 metadata:
