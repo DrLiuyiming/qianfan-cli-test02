@@ -35,7 +35,10 @@ metadata:
 | 接入 Agent | `qianfan +connect` | qianfan-connect |
 | 登录与凭证 | `qianfan auth login` / `status` / `logout` | qianfan-auth |
 | 选套餐与模型 | `qianfan profile` / `qianfan models list` | qianfan-profile / qianfan-models |
-| 调用模型 | `qianfan +chat` | qianfan-chat |
+| 文本推理 | `qianfan +chat` | qianfan-chat |
+| 文本向量 | `qianfan +embedding` | qianfan-embedding |
+| 图像生成 | `qianfan +gen` | qianfan-gen |
+| 视频生成 | `qianfan +video` | qianfan-video |
 | 观测用量 | `qianfan service usage` | qianfan-service |
 | 排障 | `qianfan doctor` | qianfan-doctor |
 

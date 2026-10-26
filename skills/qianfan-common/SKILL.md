@@ -1,6 +1,6 @@
 ---
 name: qianfan-common
-description: "千帆 CLI（qianfan 命令）的通用操作规则，供所有 qianfan-* skill 复用：CLI 安装、JSON 输出与解析、认证前置检查、套餐 profile 与模型选择、本地变更的预演与确认、环境变量、统一错误码与退出码。调用任何 qianfan 子命令（auth / profile / models / +chat / service / doctor / +connect）前先加载本 skill。反触发：用户只想执行某个具体能力（如登录、推理、查用量）时不要停在本 skill，读完规则立刻转对应能力 skill。"
+description: "千帆 CLI（qianfan 命令）的通用操作规则，供所有 qianfan-* skill 复用：CLI 安装、JSON 输出与解析、认证前置检查、套餐 profile 与模型选择、本地变更的预演与确认、环境变量、统一错误码与退出码。调用任何 qianfan 子命令（auth / profile / models / +chat / +embedding / +gen / +video / service / endpoint / doctor / +connect）前先加载本 skill。反触发：用户只想执行某个具体能力（如登录、推理、查用量）时不要停在本 skill，读完规则立刻转对应能力 skill。"
 license: Apache-2.0
 metadata:
   requires:
@@ -40,7 +40,11 @@ qianfan --version
 | `qianfan profile list` / `show` / `use` / `set-default` | 套餐查看切换与默认模型绑定 | qianfan-profile |
 | `qianfan models list` | 列出可绑定模型 | qianfan-models |
 | `qianfan +chat <prompt>` | 文本推理，支持 `--stream` | qianfan-chat |
+| `qianfan +embedding <text> [text...]` | 文本向量化（embedding） | qianfan-embedding |
+| `qianfan +gen <prompt>` | 文生图 | qianfan-gen |
+| `qianfan +video <prompt>` | 视频生成（异步任务，`--task` 查询 / `--wait` 轮询） | qianfan-video |
 | `qianfan service usage` | 服务调用统计与 token 消耗 | qianfan-service |
+| `qianfan endpoint list` / `get` / `create` / `modify` / `stop` / `services` | 自定义接入点管理与预置服务查询 | qianfan-endpoint |
 | `qianfan doctor` | 认证/套餐/API Key/模型/连通性体检 | qianfan-doctor |
 | `qianfan +connect` / `list` / `uninstall` | 安装、枚举、卸载本机 Agent 技能包 | qianfan-connect |
 
@@ -50,7 +54,7 @@ qianfan --version
 ## Agent 快速执行顺序
 
 1. 不确定认证状态时先 `qianfan auth status --format json`，`configured=false` 即未登录
-2. 需要凭证的命令（`profile use` / `profile set-default` / `models list` / `+chat` / `service usage` / `doctor`）在未登录时一律先引导用户本地执行 `qianfan auth login`
+2. 需要凭证的命令（`profile use` / `profile set-default` / `models list` / `+chat` / `+embedding` / `+gen` / `+video` / `service usage` / `endpoint *` / `doctor`）在未登录时一律先引导用户本地执行 `qianfan auth login`
 3. 业务命令统一带 `--format json`，只消费 CLI 的结构化输出
 4. 报错先按 `code` 分类（见 `references/error-codes.md`），把 `suggestion` 转达用户，不要原样重试同一条失败命令
 5. 涉及本地写入的命令先 `--dry-run --format json` 展示计划，得到用户确认后再 `--yes`
@@ -61,8 +65,10 @@ qianfan --version
   `tokenplan_enterprise`（Token Plan 企业版）。后两者已在配置中预置但**尚未接入 API Key**：
   对其执行 `profile use` / `+chat --profile` 返回 `INVALID_ARGUMENT`（"当前套餐（TokenPlan）暂未接入 API Key"），
   处置是切回 `platform`，不要反复重试。
-- 模型类型：`chat`、`reasoning`、`vision`、`embedding`、`rerank`；当前推理入口仅支持 `chat`。
-- 模型解析优先级：`+chat --model` > 当前/指定 profile 的 `model_bindings.chat` > 报 `MODEL_NOT_CONFIGURED`。
+- 模型类型：`chat`、`reasoning`、`vision`、`embedding`、`rerank`、`image`、`video`；用
+  `profile set-default --model-type <type> <modelId>` 绑定默认模型，推理命令未传 `--model` 时回退到对应绑定。
+- 模型解析优先级：命令 `--model` > 当前/指定 profile 对应类型的默认绑定（`+chat`→`chat`、`+embedding`→`embedding`、
+  `+gen`→`image`、`+video`→`video`）> 报 `MODEL_NOT_CONFIGURED`。
 - 预置服务开通状态：`models list --format json` 的 `charge_status` 为 `false` 时，绑定默认模型与发起推理
   都会被拦下并返回 `MODEL_NOT_ACTIVATED`（推理不会发出请求）。CLI 判定前会强制刷新一次模型列表，
   所以只需引导用户去控制台开通，不要靠重试或等缓存过期。

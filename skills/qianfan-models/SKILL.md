@@ -19,8 +19,8 @@ metadata:
 ## 何时使用本 skill
 
 - 用户想知道账号下有哪些模型可用
-- 绑定默认 chat 模型前需要候选 modelId
-- `+chat --model` 需要一个确切的 modelId
+- 绑定任意类型默认模型前需要候选 modelId（`chat` / `embedding` / `image` / `video`）
+- `+chat` / `+embedding` / `+gen` / `+video` 的 `--model` 需要一个确切的 modelId
 
 ## 命令一览
 
@@ -42,9 +42,10 @@ metadata:
 
 - 查询固定使用 **platform 套餐的 API Key**（Bearer 认证），**不随 `current_profile` 变化**，
   因此切换套餐不影响结果。
-- 列表**只展示 chat 推理链路可用的模型**（服务端类型为 `chat` / `multimodal`）：CLI 当前只有
-  `+chat` 一条推理链路，embedding / rerank / image2text 等模型暂不展示。账号下有这类模型但
-  `models list` 里看不到是预期行为，不要据此判断账号无权限。
+- 列表**只展示已实现推理链路可用的模型**：文本（`chat` / `multimodal`，用于 `+chat`）、
+  向量（`embedding`，用于 `+embedding`）、生图（`text2image`，用于 `+gen`）、
+  视频（`text2video` / `image2video`，用于 `+video`）。`rerank` / `image2text` 等暂无对应命令，不展示。
+  账号下有这类模型但 `models list` 里看不到是预期行为，不要据此判断账号无权限。
 - `charge_status` 为 `false` 的预置服务不能绑定、也不能推理，两条链路都会返回 `MODEL_NOT_ACTIVATED`；
   挑 modelId 时优先选该字段为 `true` 的。字段缺失（服务端未下发）按已开通处理，不要据此判断不可用。
 - 结果有最长 5 分钟的本地缓存，按登录账号与环境隔离；刚在控制台开通的服务想立刻看到状态用

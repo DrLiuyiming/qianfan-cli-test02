@@ -8,8 +8,8 @@
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D16-brightgreen)](https://nodejs.org)
 
-千帆的模型发现、文本推理、套餐与默认模型绑定、用量统计和诊断能力，都可以通过 Qianfan CLI + Skills
-交给 Comate、Claude Code 等本地 Agent 调用。
+千帆的模型发现、文本推理、文本向量、图像生成、视频生成、套餐与默认模型绑定、用量统计和诊断能力，
+都可以通过 Qianfan CLI + Skills 交给 Comate、Claude Code 等本地 Agent 调用。
 
 ```shell
 npm i -g @baiducloud/qianfan-cli@latest
@@ -22,8 +22,12 @@ npm i -g @baiducloud/qianfan-cli@latest
 ## Qianfan CLI 能做什么
 
 - **模型调用**：文本对话、SSE 流式输出、system 提示与采样参数
+- **文本向量**：把一段或多段文本转成向量，用于检索、相似度与 RAG
+- **图像生成**：按文本提示词生成图像，支持负向提示、分辨率与张数
+- **视频生成**：按文本/图片生成视频（异步任务，可查询或轮询到完成）
 - **模型发现**：列出当前账号可绑定的模型，拿到 modelId
-- **套餐与绑定**：查看和切换套餐 profile，为模型类型绑定默认模型
+- **套餐与绑定**：查看和切换套餐 profile，为模型类型绑定默认模型（含 image / video）
+- **自定义接入点**：查询、创建、修改、停用自定义服务接入点，配置每接入点的 RPM/TPM 限流，并列出预置服务拿 serviceId
 - **Agent 接入**：安装千帆 Skills，让本地 Agent 用自然语言调用千帆能力
 - **用量统计**：按模型与时间粒度查调用次数、成功失败数与 token 消耗
 - **体检诊断**：一条命令检查登录态、套餐、模型绑定与推理连通性
@@ -95,6 +99,23 @@ qianfan +chat --stream --system "你是资深后端工程师" "解释一下 MVCC
 qianfan +chat --model <modelId> --temperature 0.2 --max-tokens 512 "..."
 ```
 
+### 文本向量、图像与视频
+
+```shell
+# 文本向量（可一次传多段）
+qianfan +embedding --format json "白色 T 恤" "黑色卫衣"
+
+# 文生图
+qianfan +gen --format json "一只戴墨镜的柴犬，扁平插画风格"
+
+# 视频生成（异步任务）：创建后等待完成，或先拿 taskId 稍后查询
+qianfan +video --image ./first-frame.png --wait --format json "镜头缓缓拉远"
+qianfan +video --task <taskId> --format json
+```
+
+未传 `--model` 时，这些命令会回退到对应类型（`embedding` / `image` / `video`）的默认绑定，
+可用 `qianfan profile set-default --model-type <type> <modelId>` 预先绑定。
+
 ### 套餐与默认模型
 
 ```shell
@@ -102,6 +123,8 @@ qianfan profile list
 qianfan profile show [profile]
 qianfan profile use <profile>
 qianfan profile set-default --model-type chat <modelId>
+qianfan profile set-default --model-type image <modelId>
+qianfan profile set-default --model-type video <modelId>
 ```
 
 ### 接入本地 Agent
@@ -125,15 +148,37 @@ qianfan doctor --check chat --format json
 
 `doctor` 是只读诊断，不会改动任何资源。
 
+### 自定义接入点
+
+```shell
+# 列出预置服务，拿 serviceId
+qianfan endpoint services --type chat --format json
+
+# 基于预置服务创建接入点（--rpm/--tpm/--tpm-input/--tpm-output 至少填一个）
+qianfan endpoint create --service-id <serviceId> --name my-chat --suffix mychat --rpm 60 --tpm 10000
+
+# 查询与管理
+qianfan endpoint list --status Active --format json
+qianfan endpoint get <endpointId>
+qianfan endpoint modify <endpointId> --name new-name --tpm 20000
+qianfan endpoint stop <endpointId>
+```
+
+`create` 必填 `--service-id`、`--name`、`--suffix`，限流四项至少指定一个；`modify` 至少指定一项要改的字段。
+
 ## 命令入口
 
 | 任务 | 命令 |
 |---|---|
 | 登录、登出、查看登录态 | `qianfan auth` |
 | 文本推理与流式输出 | `qianfan +chat` |
+| 文本向量 | `qianfan +embedding` |
+| 图像生成 | `qianfan +gen` |
+| 视频生成 | `qianfan +video` |
 | 查询可绑定模型 | `qianfan models` |
 | 套餐切换与默认模型绑定 | `qianfan profile` |
 | 调用量与 token 消耗 | `qianfan service usage` |
+| 自定义接入点管理 | `qianfan endpoint` |
 | 体检与连通性诊断 | `qianfan doctor` |
 | 安装 / 卸载 Agent Skills | `qianfan +connect` |
 
@@ -145,6 +190,7 @@ qianfan +chat --help
 qianfan models list --help
 qianfan profile --help
 qianfan service usage --help
+qianfan endpoint --help
 qianfan doctor --help
 ```
 
@@ -197,8 +243,8 @@ qianfan +connect
 ```
 
 Qianfan CLI 会把这些 Skills 安装到本机 Agent（Comate / Claude Code 等），使 Agent 能通过自然语言调用
-千帆能力，包括登录、模型查询、套餐与默认模型绑定、文本推理、用量统计和体检诊断。技能包只编排 CLI 命令，
-不读取本地凭证、不直接调用千帆 HTTP 接口。
+千帆能力，包括登录、模型查询、套餐与默认模型绑定、文本推理、文本向量、图像生成、视频生成、自定义接入点管理、
+用量统计和体检诊断。技能包只编排 CLI 命令，不读取本地凭证、不直接调用千帆 HTTP 接口。
 
 ### 贡献 Skills
 

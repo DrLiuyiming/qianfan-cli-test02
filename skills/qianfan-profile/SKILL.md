@@ -63,12 +63,13 @@ qianfan profile use platform
 qianfan profile set-default --model-type chat <modelId>
 ```
 
-`--model-type` 只接受 `chat`/`reasoning`/`vision`/`embedding`/`rerank`，其他取值返回 `INVALID_ARGUMENT`。
+`--model-type` 只接受 `chat`/`reasoning`/`vision`/`embedding`/`rerank`/`image`/`video`，其他取值返回 `INVALID_ARGUMENT`。
 `set-default` 会在写入前做三道校验（会查一次模型列表，可能触发网络请求）：modelId 必须存在于当前账号的
 预置服务列表（否则 `INVALID_ARGUMENT`）、类型必须可用于该 `--model-type`（例如 text2image 模型不能绑成
 `chat`，返回 `INVALID_ARGUMENT` 并在 message 里给出真实类型）、且该预置服务必须已开通后付费调用
 （未开通返回 `MODEL_NOT_ACTIVATED`）。任一校验失败都**不写入配置**，先按 `suggestion` 处置再重试。
-当前推理入口只用到 `chat`。
+各模型类型对应的推理命令：`chat`→`+chat`、`embedding`→`+embedding`、`image`→`+gen`、`video`→`+video`；
+绑定后对应命令未传 `--model` 即回退到该默认模型（`reasoning`/`vision`/`rerank` 为预留类型，暂无独立推理命令）。
 套餐未开通、企业席位未分配或未生成 API Key 时 `use` 同样不切换，分别返回 `PACKAGE_NOT_ACTIVATED`、
 `SEAT_NOT_ASSIGNED`、`API_KEY_NOT_GENERATED`，按 `suggestion` 引导用户去控制台处理。
 
